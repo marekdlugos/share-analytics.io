@@ -7,13 +7,12 @@ exports.handler = function(event, context) {
 	request({
 	      method: 'GET',
 	      uri: "http://graph.facebook.com/?id="+event.url
-	}, function(response, body) {
-	    console.log(response, body);
-	    
+	}, function(error,response, body) {
+	    //console.log(response, body);
 		var data = {
 			"facebook": body
 		};
-		
+		console.log(data);		
 		context.succeed(data);
 	});
 };

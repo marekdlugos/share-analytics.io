@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "request": "^2.65.0"
-  }
+    "request": "^2.65.0",
+	"node-lambda": "0.1.5"
+  },
+  "scripts": {
+	"setup": "node-lambda setup",
+	"run": "node-lambda run",
+	"deploy": "node-lambda deploy"
+	}
 }
