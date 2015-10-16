@@ -1,0 +1,8 @@
+{
+  "name": "analytics-share",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "request": "^2.65.0"
+  }
+}
