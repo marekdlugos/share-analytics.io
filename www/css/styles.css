@@ -9,8 +9,6 @@
 		url('../fonts/codropsicons/codropsicons.svg#codropsicons') format('svg');
 }
 
-html { font-size: 1em; }
-
 *, *:after, *:before { -webkit-box-sizing: border-box; box-sizing: border-box; }
 .clearfix:before, .clearfix:after { content: ''; display: table; }
 .clearfix:after { clear: both; }
@@ -190,7 +188,7 @@ form input[type=submit]:hover {
 
 .results h3 {
 	color: #eee;
-	font-size: 3em;
+	font-size: 4em;
 	margin-top: 0.1em;
 }
 

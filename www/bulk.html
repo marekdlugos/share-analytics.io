@@ -10,7 +10,6 @@
 		<meta name="author" content="Share Analytics" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="css/styles.css" />
 		<link href='http://fonts.googleapis.com/css?family=Raleway:200,400,800' rel='stylesheet' type='text/css'>
 		<!--[if IE]>
@@ -25,7 +24,7 @@
 					<canvas id="stars-canvas"></canvas>
 					<div class="content">
 						<h1 class="main-title">Discover how viral <br>your links are</h1>
-						<form action="result.html" id="bulkForm" method="GET">
+						<form id="bulkForm" method="GET">
 							<textarea name="url" id="urls" rows="10" placeholder="Paste your links here..."></textarea>
 							<input type="submit" id="analyze" value="Analyze" />
 						</form>
@@ -33,39 +32,35 @@
 				</div>
 			</div>
 
-			<ul style="display: none;" id="results">
-				<li>
-					<div class="row">
-						<div class="col md-12">
-							<h2><a href="http://zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/">zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/</a></h2>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-3 facebook">
-							<span>Facebook likes</span>
-							<h3><i class="fa fa-icon fa-facebook-official"></i> <span id="facebook"></span></h3>
-						</div>
-						<div class="col-md-3 twitter">
-							<span>Twitter tweets</span>
-							<h3><i class="fa fa-icon fa-twitter"></i> <span id="twitter"></span></h3>
-						</div>
-						<div class="col-md-3 google">
-							<span>Google +1</span>
-							<h3><i class="fa fa-icon fa-google-plus"></i> <span id="google"></span></h3>
-						</div>
-						<div class="col-md-3 linkedin">
-							<span>LinkedIn shares</span>
-							<h3><i class="fa fa-icon fa-linkedin-square"></i> <span id="linkedin"></span></h3>
-						</div>
-					</div>
-				</li>
-			</ul>
+			<ul style="display: none;" id="results"></ul>
 
 		</div>
+
+		<script>
+			function animateValue(id, start, end, duration) {
+				var range = end - start;
+				var current = start;
+				var increment = end > start? 1 : -1;
+				var stepTime = Math.abs(Math.floor(duration / range));
+				var obj = document.getElementById(id);
+				var timer = setInterval(function() {
+					if (current == end) {
+						clearInterval(timer);
+						obj.innerHTML = current;
+						return
+					}
+					current += increment;
+					obj.innerHTML = current;
+				}, stepTime);
+			}
+
+		</script>
 
 		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<script>
 			$(document).ready(function(){
+
+
 				$( "#bulkForm" ).submit(function( e ) {
 					e.preventDefault();
 					var $form = $( this );
@@ -77,12 +72,66 @@
 						method: "POST",
 						data: urls,
 						contentType: "application/json",
-						dataType: "text"
+						dataType: "json"
 					}).done(function(data) {
-						$( "#results" ).css("display","block");
+						$("#results" ).css("display","block");
 						$( "#content" ).css("display","none");
 						$("#container").removeClass("stars");
 						$("body").addClass("results");
+						$("head").prepend("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/bootstrap.min.css\" />");
+						var i = 0;
+						$.each(data, function( url, value ) {
+							$("#results").append("<li>\
+						<div class=\"row\">\
+								<div class=\"col md-12\">\
+								<h2><a href=\"" + url + "\">"+ url +"</a></h2\>\
+						</div>\
+						</div>\
+						<div class=\"row\">\
+								<div class=\"col-md-3 facebook\">\
+								<span>Facebook likes</span>\
+						<h3><i class=\"fa fa-icon fa-facebook-official\"></i> <span id=\"facebook"+i+"\"></span></h3>\
+						</div>\
+						<div class=\"col-md-3 twitter\">\
+								<span>Twitter tweets</span>\
+						<h3><i class=\"fa fa-icon fa-twitter\"></i> <span id=\"twitter"+i+"\"></span></h3>\
+						</div>\
+						<div class=\"col-md-3 google\">\
+								<span>Google +1</span>\
+								<h3><i class=\"fa fa-icon fa-google-plus\"></i> <span id=\"google"+i+"\"></span></h3>\
+						</div>\
+						<div class=\"col-md-3 linkedin\">\
+								<span>LinkedIn shares</span>\
+						<h3><i class=\"fa fa-icon fa-linkedin-square\"></i> <span id=\"linkedin"+i+"\"></span></h3>\
+						</div>\
+						</div>\
+						</li>\
+						");
+
+
+							if(value['facebook-shares'] == undefined)value['facebook-shares'] = 0;
+							if(value['twitter'] == undefined)value['twitter'] = 0;
+							if(value['linkedin'] == undefined)value['linkedin'] = 0;
+							if(value['googleplus'] == undefined)value['googleplus'] = 0;
+
+							var facebook_min = parseInt(value['facebook-shares']) - 200 > 0 ? parseInt(value['facebook-shares']) - 200 : 0;
+							animateValue("facebook"+i, facebook_min, value['facebook-shares'], 1000);
+
+							var twitter_min = parseInt(value['twitter']) - 200 > 0 ? parseInt(value['twitter'])-200 : 0;
+							animateValue("twitter"+i,twitter_min, value['twitter'], 1000);
+
+							var linkedin_min = parseInt(value['linkedin']) - 200 > 0 ? parseInt(value['linkedin'])-200 : 0;
+							animateValue("linkedin"+i,linkedin_min, value['linkedin'], 1000);
+
+							if(value['googleplus'] == -1) {
+								$('#google'+i).innerHTML = "Moc";
+							}
+							else {
+								var google_min = parseInt(value['googleplus']) - 200 > 0 ? parseInt(value['googleplus']) - 200 : 0;
+								animateValue("google"+i, google_min, value['googleplus'], 1000);
+							}
+							i++;
+						});
 					});
 				});
 			})
