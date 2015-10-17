@@ -26,6 +26,79 @@ $(document).ready(function(){
 				var google_min = parseInt(data['googleplus']) - 200 > 0 ? parseInt(data['googleplus']) - 200 : 0;
 				animateValue("google", google_min, data['googleplus'], 1000);
 			}
+			var array = {
+				"facebook-comments": [],
+				"facebook-shares": [],
+				"googleplus": [],
+				"linkedin": [],
+				"twitter": []
+			};
+
+			var i = 0;
+			$.each(data['graph_data'], function (key,value) {
+				if(value['facebook-shares'] != undefined && value['facebook-shares'] != 0)array['facebook-shares'].push(value['facebook-shares']);
+				if(value['googleplus'] != undefined && value['googleplus'] != 0)array['googleplus'].push(value['googleplus']);
+				if(value['linkedin'] != undefined && value['linkedin'] != 0)array['linkedin'].push(value['linkedin']);
+				if(value['twitter'] != undefined && value['twitter'] != 0)array['twitter'].push(value['twitter']);
+			});
+
+			var fb_shares = [];
+
+			for (var i = 1; i <= array['facebook-shares'].length; i++) {
+				fb_shares.push(i);
+			}
+
+			var lineChartData = {
+				labels : fb_shares,
+				datasets : [
+					{
+						label: "Facebook shares",
+						fillColor: "rgba(59, 89, 152,0.2)",
+						strokeColor: "rgba(59, 89, 152,1)",
+						pointColor : "rgba(59, 89, 152,1)",
+						pointStrokeColor : "#fff",
+						pointHighlightFill : "#fff",
+						pointHighlightStroke : "rgba(220,220,220,1)",
+						data : array['facebook-shares']
+					},
+					{
+						label: "Google+ shares",
+						fillColor : "rgba(211, 72, 54,0.2)",
+						strokeColor : "rgba(211, 72, 54,1)",
+						pointColor : "rgba(211, 72, 54,1)",
+						pointStrokeColor : "#fff",
+						pointHighlightFill : "#fff",
+						pointHighlightStroke : "rgba(220,220,220,1)",
+						data : array['googleplus']
+					},
+					{
+						label: "Linkedin",
+						fillColor: "rgba(0, 123, 181,0.2)",
+						strokeColor: "rgba(0, 123, 181,1)",
+						pointColor: "rgba(0, 123, 181,1)",
+						pointStrokeColor: "#fff",
+						pointHighlightFill: "#fff",
+						pointHighlightStroke: "rgba(220,220,220,1)",
+						data: array['linkedin']
+					},
+					{
+						label: "Twitter",
+						fillColor : "rgba(0, 172, 237,0.2)",
+						strokeColor : "rgba(0, 172, 237,1)",
+						pointColor : "rgba(0, 172, 237,1)",
+						pointStrokeColor : "#fff",
+						pointHighlightFill : "#fff",
+						pointHighlightStroke : "rgba(220,220,220,1)",
+						data : array['twitter']
+					}
+				]
+
+			};
+
+			var ctx = document.getElementById("canvas").getContext("2d");
+			window.myLine = new Chart(ctx).Line(lineChartData, {
+				responsive: true
+			});
 
 		},
 		error : function(error) {
