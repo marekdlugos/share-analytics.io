@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Link name | Share analytics</title>
+		<meta name="description" content="Share analytics for your links! Provides information and graph based on social networks data." />
+		<meta name="keywords" content="social analytics, social, analytics, viral, link" />
+		<meta name="author" content="Share Analytics" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/styles.css" />
+		<link href='http://fonts.googleapis.com/css?family=Raleway:200,400,800' rel='stylesheet' type='text/css'>
+		<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+	<body class="results">
+		<div class="container">
+			<div class="row header">
+				<div class="col-md-12">
+					<h1>How are you doing on social networks?</h1>
+					<span>Dashboard | <a href="bulk.html">Analyze another bunch of links</a></span>
+				</div>
+			</div>
+
+			<ul>
+				<li>
+					<div class="row">
+						<div class="col md-12">
+							<h2><a href="http://zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/">zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/</a></h2>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 facebook">
+							<span>Facebook likes</span>
+							<h3><i class="fa fa-icon fa-facebook-official"></i> <span id="facebook"></span></h3>
+						</div>
+						<div class="col-md-3 twitter">
+							<span>Twitter tweets</span>
+							<h3><i class="fa fa-icon fa-twitter"></i> <span id="twitter"></span></h3>
+						</div>
+						<div class="col-md-3 google">
+							<span>Google +1</span>
+							<h3><i class="fa fa-icon fa-google-plus"></i> <span id="google"></span></h3>
+						</div>
+						<div class="col-md-3 linkedin">
+							<span>LinkedIn shares</span>
+							<h3><i class="fa fa-icon fa-linkedin-square"></i> <span id="linkedin"></span></h3>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="row">
+						<div class="col md-12">
+							<h2><a href="http://zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/">zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/</a></h2>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 facebook">
+							<span>Facebook likes</span>
+							<h3><i class="fa fa-icon fa-facebook-official"></i> <span id="facebook"></span></h3>
+						</div>
+						<div class="col-md-3 twitter">
+							<span>Twitter tweets</span>
+							<h3><i class="fa fa-icon fa-twitter"></i> <span id="twitter"></span></h3>
+						</div>
+						<div class="col-md-3 google">
+							<span>Google +1</span>
+							<h3><i class="fa fa-icon fa-google-plus"></i> <span id="google"></span></h3>
+						</div>
+						<div class="col-md-3 linkedin">
+							<span>LinkedIn shares</span>
+							<h3><i class="fa fa-icon fa-linkedin-square"></i> <span id="linkedin"></span></h3>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="row">
+						<div class="col md-12">
+							<h2><a href="http://zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/">zpravy.idnes.cz/vyzkum-o-promenach-ceske-spolecnosti-d81-/</a></h2>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 facebook">
+							<span>Facebook likes</span>
+							<h3><i class="fa fa-icon fa-facebook-official"></i> <span id="facebook"></span></h3>
+						</div>
+						<div class="col-md-3 twitter">
+							<span>Twitter tweets</span>
+							<h3><i class="fa fa-icon fa-twitter"></i> <span id="twitter"></span></h3>
+						</div>
+						<div class="col-md-3 google">
+							<span>Google +1</span>
+							<h3><i class="fa fa-icon fa-google-plus"></i> <span id="google"></span></h3>
+						</div>
+						<div class="col-md-3 linkedin">
+							<span>LinkedIn shares</span>
+							<h3><i class="fa fa-icon fa-linkedin-square"></i> <span id="linkedin"></span></h3>
+						</div>
+					</div>
+				</li>
+			</ul>
+
+			<footer>
+				<p>&copy; 2015 Share Analytics created during 30 hours at RockAway AWS Hackathon.</p>
+			</footer>
+		</div>
+
+		<script>
+		function animateValue(id, start, end, duration) {
+		    var range = end - start;
+		    var current = start;
+		    var increment = end > start? 1 : -1;
+		    var stepTime = Math.abs(Math.floor(duration / range));
+		    var obj = document.getElementById(id);
+		    var timer = setInterval(function() {
+		        if (current == end) {
+		            clearInterval(timer);
+					obj.innerHTML = current;
+					return
+		        }
+				current += increment;
+				obj.innerHTML = current;
+		    }, stepTime);
+		}
+
+		//animateValue("facebook", 2700, 2901, 1000);
+		//animateValue("twitter", 5000, 5123, 1000);
+		//animateValue("google", 9000, 9214, 1000);
+		//animateValue("linkedin", 400, 521, 1000);
+
+
+		</script>
+		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<script>
+			$(document).ready(function(){
+					var url = location.search.split('url=')[1];
+
+					$.ajax({
+						url: "https://t4fzdgrbyi.execute-api.eu-west-1.amazonaws.com/prod?url=" + url,
+					    contentType: "application/json",
+					    success : function(data) {
+							if(data['facebook-shares'] == undefined)data['facebook-shares'] = 0;
+							if(data['twitter'] == undefined)data['twitter'] = 0;
+							if(data['linkedin'] == undefined)data['linkedin'] = 0;
+							if(data['googleplus'] == undefined)data['googleplus'] = 0;
+
+							var facebook_min = parseInt(data['facebook-shares']) - 200 > 0 ? parseInt(data['facebook-shares']) - 200 : 0;
+							animateValue("facebook", facebook_min, data['facebook-shares'], 1000);
+
+							var twitter_min = parseInt(data['twitter']) - 200 > 0 ? parseInt(data['twitter'])-200 : 0;
+							animateValue("twitter",twitter_min, data['twitter'], 1000);
+
+							var linkedin_min = parseInt(data['linkedin']) - 200 > 0 ? parseInt(data['linkedin'])-200 : 0;
+							animateValue("linkedin",linkedin_min, data['linkedin'], 1000);
+
+							if(data['googleplus'] == -1) {
+								$('#google').innerHTML = "Moc";
+							}
+							else {
+								var google_min = parseInt(data['googleplus']) - 200 > 0 ? parseInt(data['googleplus']) - 200 : 0;
+								animateValue("google", google_min, data['googleplus'], 1000);
+							}
+
+						},
+					    error : function(error) {
+
+					    }
+					})
+			})
+		</script>
+		<script src="js/Chart.min.js"></script>
+	</body>
+</html>
