@@ -23,15 +23,35 @@
 					<canvas id="stars-canvas"></canvas>
 					<div class="content">
 						<h1 class="main-title">Discover how viral <br>your links are</h1>
-						<form action="result.html" method="GET">
-							<textarea name="url" rows="10" placeholder="Paste your links here..."></textarea>
-							<input type="file">
+						<form action="result.html" id="bulkForm" method="GET">
+							<textarea name="url" id="urls" rows="10" placeholder="Paste your links here..."></textarea>
 							<input type="submit" id="analyze" value="Analyze" />
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
+		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<script>
+			$(document).ready(function(){
+				$( "#bulkForm" ).submit(function( e ) {
+					e.preventDefault();
+					var $form = $( this );
+					url = "https://t4fzdgrbyi.execute-api.eu-west-1.amazonaws.com/prod/bulk";
+					urls = $form.find( "#urls" ).val();
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: urls,
+						contentType: "application/json",
+						dataType: "text"
+					}).done(function(data) {
+						//$( this ).addClass( "done" );
+					});
+				});
+			})
+		</script>
 		<script src="js/TweenLite.min.js"></script>
 		<script src="js/EasePack.min.js"></script>
 		<script src="js/rAF.js"></script>
