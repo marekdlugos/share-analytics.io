@@ -25,7 +25,7 @@
 					<div class="content">
 						<h1 class="main-title">Discover how viral <br>your links are</h1>
 						<form id="bulkForm" method="GET">
-							<textarea name="url" id="urls" rows="10" placeholder="Paste your links here..."></textarea>
+							<textarea name="url" id="urls" rows="10" placeholder="Paste your links here..." required></textarea>
 							<input type="submit" id="analyze" value="Analyze" />
 						</form>
 					</div>
@@ -59,8 +59,7 @@
 		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<script>
 			$(document).ready(function(){
-
-
+				var isFetched = true;
 				$( "#bulkForm" ).submit(function( e ) {
 					e.preventDefault();
 					var $form = $( this );
@@ -74,6 +73,8 @@
 						contentType: "application/json",
 						dataType: "json"
 					}).done(function(data) {
+						if(!isFetched)return;
+						isFetched = false;
 						$("#results" ).css("display","block");
 						$( "#content" ).css("display","none");
 						$("#container").removeClass("stars");
@@ -108,11 +109,11 @@
 						</li>\
 						");
 
-
 							if(value['facebook-shares'] == undefined)value['facebook-shares'] = 0;
 							if(value['twitter'] == undefined)value['twitter'] = 0;
 							if(value['linkedin'] == undefined)value['linkedin'] = 0;
 							if(value['googleplus'] == undefined)value['googleplus'] = 0;
+							console.log(value['facebook-shares']);
 
 							var facebook_min = parseInt(value['facebook-shares']) - 200 > 0 ? parseInt(value['facebook-shares']) - 200 : 0;
 							animateValue("facebook"+i, facebook_min, value['facebook-shares'], 1000);
@@ -133,6 +134,7 @@
 							i++;
 						});
 					});
+
 				});
 			})
 		</script>
