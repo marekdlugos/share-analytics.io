@@ -2,8 +2,9 @@ exports.up = function(knex, Promise) {
      return knex.schema.createTable('urls',
 	      function (table) {
                table.uuid("url_id").primary();
-               table.string('url');
-               table.timestamps();
+               table.string('url').index();
+               table.timestamp('created_at');
+			   table.timestamp('updated_at').index();
           }
      ).createTable('url_responses',
           function (table) {
@@ -16,7 +17,8 @@ exports.up = function(knex, Promise) {
               table.integer("facebook-shares");
               table.integer("facebook-comments");
 
-              table.timestamps();
+			  table.timestamp('created_at').index();
+			  table.timestamp('updated_at');
           }
      );
 };

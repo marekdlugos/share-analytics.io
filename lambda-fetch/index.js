@@ -89,7 +89,7 @@ function makeRemoteRequest(url, data, context) {
 			"facebook-comments": data['facebook-comments'],
 			updated_at: new Date(),
 			created_at: new Date()
-		};dbEntry
+		};
 
 		knex.table('url_responses').insert(dbEntry).then(function() {
 			knex.table('urls').where({
@@ -101,7 +101,6 @@ function makeRemoteRequest(url, data, context) {
 			});
 		});
 	});
-
 }
 
 exports.handler = function(event, context) {
@@ -112,57 +111,9 @@ exports.handler = function(event, context) {
 		return;
 	}
 
-	var data = {url: event.url};
-	var dbEntry;
+	var data = {url: event['url']};
 
-	var p0 = knex.select().table('urls').where({url: event.url}).then(function(list) {
-		if (list.length > 0) {
-			dbEntry = list[0];
+	data['uuid'] = event['url_id'];
 
-			data['uuid'] = dbEntry['url_id'];
-			console.log(dbEntry);
-
-			var diff = Math.abs(new Date() - dbEntry['updated_at']);
-
-			/* if updated_at is younger than 10 minutes, returns last response */
-			if (diff < 1000 * 60 * 10) {
-				knex.select().table('url_responses').where({
-					url_id: dbEntry['url_id']
-				}).orderBy('created_at', 'desc').limit(1).then(function (list) {
-					if (list.length > 0) {
-						var row = list[0];
-						data['googleplus'] = row['googleplus'];
-						data['twitter'] = row['twitter'];
-						data['linkedin'] = row['linkedin'];
-						data['facebook-shares'] = row['facebook-shares'];
-						data['facebook-comments'] = row['facebook-comments'];
-
-						context.succeed(data);
-					} else {
-						makeRemoteRequest(event.url, data, context);
-					}
-				});
-			} else {
-				makeRemoteRequest(event.url, data, context);
-			}
-
-		} else {
-			dbEntry = {
-				url: event.url,
-				"url_id": uuid.v4(),
-				updated_at: new Date(),
-				created_at: new Date()
-			};
-
-			data['uuid'] = dbEntry['url_id'];
-
-			/* return promise to wait for */
-			knex.table('urls').insert(dbEntry).then(function() {
-				makeRemoteRequest(event.url, data, context);
-			});
-		}
-	}).done();
-
-
-
+	makeRemoteRequest(event['url'], data, context);
 };
