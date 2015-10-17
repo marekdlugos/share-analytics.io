@@ -130,7 +130,7 @@ exports.handler = function(event, context) {
 
 			var diff = Math.abs(new Date() - dbEntry['updated_at']);
 
-			/* if updated_at is younger than 10 minuts, returns last response */
+			/* if updated_at is younger than 10 minutes, returns last response */
 			if (diff < 1000 * 60 * 10) {
 				knex.select().table('url_responses').where({
 					url_id: dbEntry['url_id']
