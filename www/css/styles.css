@@ -111,7 +111,16 @@ form input[type=submit]:hover {
 
 @media only screen and (max-width : 768px) {
 	.stars .main-title {
+		white-space: normal;
 		font-size: 3em;
+	}
+
+	form input[type=url] {
+		width: 100%;
+	}
+
+	.content {
+		width: 100%;
 	}
 }
 
