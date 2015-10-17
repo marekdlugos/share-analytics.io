@@ -55,29 +55,23 @@ function makeRemoteRequest(url, data, context) {
 	});
 
 	var p4 = request({
-		method: 'POST',
-		json: true,
-		body: [{
-			"method":"pos.plusones.get",
-			"id":"p",
-			"params":{
-				"nolog":true,
-				"id":url,
-				"source":"widget",
-				"userId":"@viewer",
-				"groupId":"@self"
-			},
-			"jsonrpc":"2.0",
-			"key":"p",
-			"apiVersion":"v1"
-		}],
-		uri: "https://clients6.google.com/rpc?key=AIzaSyAES4Ya_kcxHLtbSacbHYPmiLE6Nrfmp-4"
+		method: 'GET',
+		uri: "https://plusone.google.com/_/+1/fastbutton?url="+encodeURIComponent(event.url)
 	}).then(function(response, body) {
-		//console.log(response[0], response[0].body);
-		var b = JSON.parse(response[0].body);
+
+		var input = response[0].body;
+
+		var regex = /aggregateCount.*?>(.*?)<.*?/g;
+		var matches, output = [];
+
+		while (matches = regex.exec(input)) {
+			output.push(matches[1]);
+		}
 
 		console.log("googleplus", elapsedTime(start));
-		var cnt = b[0]['result']['id'];
+		if(output == "Moc")output = -1;
+		var cnt = parseInt(output);
+
 		data["googleplus"] = cnt ? cnt : 0;
 	}).fail(function(e) {
 		console.log(e);
