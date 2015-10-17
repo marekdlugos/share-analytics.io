@@ -4,7 +4,7 @@
 
 exports.knex = require('knex')({
     client: 'mysql',
-//    debug: true,
+    debug: true,
     connection: {
         host: 'share-analytics-cluster.cluster-csco2glq0o6b.eu-west-1.rds.amazonaws.com',
         database: 'share',
