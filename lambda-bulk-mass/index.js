@@ -55,7 +55,7 @@ exports.handler = function(event, context) {
 	urls.forEach(function (url) {
 		batch.push(url);
 
-		if (batch.length > 1) {
+		if (batch.length > 100) {
 			var mp = sendMessage(batch).then(function(data) {
 				var dt = JSON.parse(data.Payload);
 				Object.keys(dt).forEach(function(key) {
