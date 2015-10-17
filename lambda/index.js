@@ -2,6 +2,12 @@ console.log('Loading function');
 var Q = require("q");
 var request = Q.denodeify(require("request"));
 
+function elapsedTime (start) {
+	var precision = 3; // 3 decimal places
+	var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+	return process.hrtime(start)[0] + "s, " + elapsed.toFixed(precision) + "ms";
+}
+
 exports.handler = function(event, context) {
     console.log('Received event:', JSON.stringify(event, null, 2));
 
@@ -10,6 +16,8 @@ exports.handler = function(event, context) {
 		return;
 	}
 
+
+	var start = process.hrtime();
 	var data = {url: event.url};
 
 	var p1 = request({
@@ -18,9 +26,9 @@ exports.handler = function(event, context) {
 	}).then(function(response, body) {
 //		console.log(response[0], response[0].body);
 		var b = JSON.parse(response[0].body);
-		data["facebook-shares"] = b['shares'];
-		data["facebook-comments"] = b['comments'];
-		//console.log("Facebook", data);
+		data["facebook-shares"] = b['shares'] ? b['shares'] : 0;
+		data["facebook-comments"] = b['comments'] ? b['comments'] : 0;
+		console.log("Facebook", elapsedTime(start));
 	}).fail(function(e) {
 		console.log(e);
 	});
@@ -31,8 +39,8 @@ exports.handler = function(event, context) {
 	}).then(function(response, body) {
 		//console.log(response[0], response[0].body);
 		var b = JSON.parse(response[0].body);
-		data["twitter"] = b['count'];
-		//console.log("Twitter", data);
+		data["twitter"] = b['count'] ? b['count'] : 0;
+		console.log("Twitter", elapsedTime(start));
 	}).fail(function(e) {
 		console.log(e);
 	});
@@ -44,11 +52,14 @@ exports.handler = function(event, context) {
 		//console.log(response[0], response[0].body);
 		var b = JSON.parse(response[0].body);
 
-		data["linkedin"] = b['count'];
-		//console.log("LinkedIn", data);
+		console.log("linkedin", elapsedTime(start));
+		data["linkedin"] = b['count'] ? b['count'] : 0;
 	}).fail(function(e) {
 		console.log(e);
 	});
+
+
+	// AIzaSyAES4Ya_kcxHLtbSacbHYPmiLE6Nrfmp-4
 
 	Q.allSettled([p1, p2, p3]).then(function() {
 		console.log(data);
