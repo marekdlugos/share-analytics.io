@@ -10,40 +10,15 @@ function elapsedTime (start) {
 	return process.hrtime(start)[0] + "s, " + elapsed.toFixed(precision) + "ms";
 }
 
-exports.handler = function(event, context) {
-    console.log('Received event:', JSON.stringify(event, null, 2));
 
-	if (!event.url || event.url == '') {
-		context.fail('Missing parameter url');
-		return;
-	}
-
-
+function makeRemoteRequest(url, data, context) {
 	var start = process.hrtime();
-	var data = {url: event.url};
-	var dbEntry;
 
-	var p0 = knex.select().table('urls').where({url: event.url}).then(function(list) {
-		if (list.length > 0) {
-			dbEntry = list[0];
-
-			data['uuid'] = dbEntry['url_id'];
-		} else {
-			dbEntry = {
-				url: event.url,
-				"url_id": uuid.v4()
-			};
-
-			data['uuid'] = dbEntry['url_id'];
-
-			/* return promise to wait for */
-			return knex.table('urls').insert(dbEntry);
-		}
-	});
+	console.log("Calling remote");
 
 	var p1 = request({
-	      method: 'GET',
-	      uri: "http://graph.facebook.com/?id="+event.url
+		method: 'GET',
+		uri: "http://graph.facebook.com/?id="+url
 	}).then(function(response, body) {
 //		console.log(response[0], response[0].body);
 		var b = JSON.parse(response[0].body);
@@ -56,7 +31,7 @@ exports.handler = function(event, context) {
 
 	var p2 = request({
 		method: 'GET',
-		uri: "http://cdn.api.twitter.com/1/urls/count.json?url="+event.url
+		uri: "http://cdn.api.twitter.com/1/urls/count.json?url="+url
 	}).then(function(response, body) {
 		//console.log(response[0], response[0].body);
 		var b = JSON.parse(response[0].body);
@@ -68,7 +43,7 @@ exports.handler = function(event, context) {
 
 	var p3 = request({
 		method: 'GET',
-		uri: "http://www.linkedin.com/countserv/count/share?format=json&url="+event.url
+		uri: "http://www.linkedin.com/countserv/count/share?format=json&url="+url
 	}).then(function(response, body) {
 		//console.log(response[0], response[0].body);
 		var b = JSON.parse(response[0].body);
@@ -87,7 +62,7 @@ exports.handler = function(event, context) {
 			"id":"p",
 			"params":{
 				"nolog":true,
-				"id":event.url,
+				"id":url,
 				"source":"widget",
 				"userId":"@viewer",
 				"groupId":"@self"
@@ -98,7 +73,7 @@ exports.handler = function(event, context) {
 		}],
 		uri: "https://clients6.google.com/rpc?key=AIzaSyAES4Ya_kcxHLtbSacbHYPmiLE6Nrfmp-4"
 	}).then(function(response, body) {
-		console.log(response[0], response[0].body);
+		//console.log(response[0], response[0].body);
 		var b = JSON.parse(response[0].body);
 
 		console.log("googleplus", elapsedTime(start));
@@ -108,7 +83,7 @@ exports.handler = function(event, context) {
 		console.log(e);
 	});
 
-	Q.allSettled([p0, p1, p2, p3, p4]).then(function() {
+	return Q.allSettled([p1, p2, p3, p4]).then(function() {
 		console.log(data);
 		var dbEntry = {
 			url_response_id: uuid.v4(),
@@ -118,10 +93,82 @@ exports.handler = function(event, context) {
 			twitter: data['twitter'],
 			"facebook-shares": data['facebook-shares'],
 			"facebook-comments": data['facebook-comments'],
+			updated_at: new Date(),
+			created_at: new Date()
 		};dbEntry
 
 		knex.table('url_responses').insert(dbEntry).then(function() {
-			context.succeed(data);
+			knex.table('urls').where({
+				'url_id': data['uuid']
+			}).update({
+				updated_at: new Date()
+			}).then(function() {
+				context.succeed(data);
+			});
 		});
+	});
+
+}
+
+exports.handler = function(event, context) {
+    console.log('Received event:', JSON.stringify(event, null, 2));
+
+	if (!event.url || event.url == '') {
+		context.fail('Missing parameter url');
+		return;
+	}
+
+	var data = {url: event.url};
+	var dbEntry;
+
+	var p0 = knex.select().table('urls').where({url: event.url}).then(function(list) {
+		if (list.length > 0) {
+			dbEntry = list[0];
+
+			data['uuid'] = dbEntry['url_id'];
+			console.log(dbEntry);
+
+			var diff = Math.abs(new Date() - dbEntry['updated_at']);
+
+			/* if updated_at is younger than 10 minuts, returns last response */
+			if (diff < 1000 * 60 * 10) {
+				knex.select().table('url_responses').where({
+					url_id: dbEntry['url_id']
+				}).orderBy('created_at', 'desc').limit(1).then(function (list) {
+					if (list.length > 0) {
+						var row = list[0];
+						data['googleplus'] = row['googleplus'];
+						data['twitter'] = row['twitter'];
+						data['linkedin'] = row['linkedin'];
+						data['facebook-shares'] = row['facebook-shares'];
+						data['facebook-comments'] = row['facebook-comments'];
+
+						context.succeed(data);
+					} else {
+						makeRemoteRequest(event.url, data, context);
+					}
+				});
+			} else {
+				makeRemoteRequest(event.url, data, context);
+			}
+
+		} else {
+			dbEntry = {
+				url: event.url,
+				"url_id": uuid.v4(),
+				updated_at: new Date(),
+				created_at: new Date()
+			};
+
+			data['uuid'] = dbEntry['url_id'];
+
+			/* return promise to wait for */
+			knex.table('urls').insert(dbEntry).then(function() {
+				makeRemoteRequest(event.url, data, context);
+			});
+		}
 	}).done();
+
+
+
 };
