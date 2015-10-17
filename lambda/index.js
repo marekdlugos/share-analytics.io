@@ -56,7 +56,7 @@ function makeRemoteRequest(url, data, context) {
 
 	var p4 = request({
 		method: 'GET',
-		uri: "https://plusone.google.com/_/+1/fastbutton?url="+encodeURIComponent(event.url)
+		uri: "https://plusone.google.com/_/+1/fastbutton?url="+encodeURIComponent(url)
 	}).then(function(response, body) {
 
 		var input = response[0].body;
