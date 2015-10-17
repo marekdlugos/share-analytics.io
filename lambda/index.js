@@ -58,10 +58,36 @@ exports.handler = function(event, context) {
 		console.log(e);
 	});
 
+	var p4 = request({
+		method: 'POST',
+		json: true,
+		body: [{
+			"method":"pos.plusones.get",
+			"id":"p",
+			"params":{
+				"nolog":true,
+				"id":event.url,
+				"source":"widget",
+				"userId":"@viewer",
+				"groupId":"@self"
+			},
+			"jsonrpc":"2.0",
+			"key":"p",
+			"apiVersion":"v1"
+		}],
+		uri: "https://clients6.google.com/rpc?key=AIzaSyAES4Ya_kcxHLtbSacbHYPmiLE6Nrfmp-4"
+	}).then(function(response, body) {
+		console.log(response[0], response[0].body);
+		var b = JSON.parse(response[0].body);
 
-	// AIzaSyAES4Ya_kcxHLtbSacbHYPmiLE6Nrfmp-4
+		console.log("googleplus", elapsedTime(start));
+		var cnt = b[0]['result']['id'];
+		data["googleplus"] = cnt ? cnt : 0;
+	}).fail(function(e) {
+		console.log(e);
+	});
 
-	Q.allSettled([p1, p2, p3]).then(function() {
+	Q.allSettled([p1, p2, p3, p4]).then(function() {
 		console.log(data);
 		context.succeed(data);
 	}).done();
