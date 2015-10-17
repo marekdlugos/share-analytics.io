@@ -5,6 +5,11 @@ var request = Q.denodeify(require("request"));
 exports.handler = function(event, context) {
     console.log('Received event:', JSON.stringify(event, null, 2));
 
+	if (!event.url || event.url == '') {
+		context.fail('Missing parameter url');
+		return;
+	}
+
 	var data = {url: event.url};
 
 	var p1 = request({
