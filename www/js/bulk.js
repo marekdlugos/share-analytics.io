@@ -3,7 +3,7 @@ $(document).ready(function(){
 	$( "#bulkForm" ).submit(function( e ) {
 		e.preventDefault();
 		var $form = $( this );
-		url = "https://t4fzdgrbyi.execute-api.eu-west-1.amazonaws.com/prod/bulk";
+		url = "https://t4fzdgrbyi.execute-api.eu-west-1.amazonaws.com/prod/bulk-mass";
 		urls = $form.find( "#urls" ).val();
 
 		$.ajax({
@@ -19,6 +19,7 @@ $(document).ready(function(){
 			var i = 0;
 			$.each(data, function( url, value ) {
 				if(url == undefined || value == undefined)return;
+				if(i == 200)return;
 				$("#results").append("<li>\
 						<div class=\"row\">\
 								<div class=\"col md-12\">\

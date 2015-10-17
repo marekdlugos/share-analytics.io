@@ -89,17 +89,23 @@ function makeRemoteRequest(url, data, context) {
 			"facebook-comments": data['facebook-comments'],
 			updated_at: new Date(),
 			created_at: new Date()
-		};dbEntry
+		};
+
 
 		knex.table('url_responses').insert(dbEntry).then(function() {
-			knex.table('urls').where({
+			return knex.table('urls').where({
 				'url_id': data['uuid']
 			}).update({
 				updated_at: new Date()
-			}).then(function() {
-				context.succeed(data);
+			})
+		}).then(function() {
+			return knex.select().table('url_responses').where({"url_id": dbEntry['url_id']}).then(function(list) {
+				data['graph_data'] = list;
 			});
+		}).then(function() {
+			context.succeed(data);
 		});
+
 	});
 
 }
@@ -137,7 +143,10 @@ exports.handler = function(event, context) {
 						data['facebook-shares'] = row['facebook-shares'];
 						data['facebook-comments'] = row['facebook-comments'];
 
-						context.succeed(data);
+						return knex.select().table('url_responses').where({"url_id": dbEntry['url_id']}).then(function(list) {
+							data['graph_data'] = list;
+							context.succeed(data);
+						});
 					} else {
 						makeRemoteRequest(event.url, data, context);
 					}
