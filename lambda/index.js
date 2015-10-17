@@ -1,6 +1,8 @@
 console.log('Loading function');
 var Q = require("q");
 var request = Q.denodeify(require("request"));
+var uuid = require('node-uuid');
+var knex = require('./model.js').knex;
 
 function elapsedTime (start) {
 	var precision = 3; // 3 decimal places
@@ -19,6 +21,25 @@ exports.handler = function(event, context) {
 
 	var start = process.hrtime();
 	var data = {url: event.url};
+	var dbEntry;
+
+	var p0 = knex.select().table('urls').where({url: event.url}).then(function(list) {
+		if (list.length > 0) {
+			dbEntry = list[0];
+
+			data['uuid'] = dbEntry['url_id'];
+		} else {
+			dbEntry = {
+				url: event.url,
+				"url_id": uuid.v4()
+			};
+
+			data['uuid'] = dbEntry['url_id'];
+
+			/* return promise to wait for */
+			return knex.table('urls').insert(dbEntry);
+		}
+	});
 
 	var p1 = request({
 	      method: 'GET',
@@ -87,8 +108,20 @@ exports.handler = function(event, context) {
 		console.log(e);
 	});
 
-	Q.allSettled([p1, p2, p3, p4]).then(function() {
+	Q.allSettled([p0, p1, p2, p3, p4]).then(function() {
 		console.log(data);
-		context.succeed(data);
+		var dbEntry = {
+			url_response_id: uuid.v4(),
+			url_id: data['uuid'],
+			googleplus: data['googleplus'],
+			linkedin: data['linkedin'],
+			twitter: data['twitter'],
+			"facebook-shares": data['facebook-shares'],
+			"facebook-comments": data['facebook-comments'],
+		};dbEntry
+
+		knex.table('url_responses').insert(dbEntry).then(function() {
+			context.succeed(data);
+		});
 	}).done();
 };
