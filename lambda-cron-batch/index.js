@@ -13,7 +13,7 @@ var lambda = new aws.Lambda({
 	// rather than explicitly defining it on every request, I can set it here as the
 	// default QueueUrl to be automatically appended to every request.
 	params: {
-		FunctionName: 'searchSocialCronBatch', /* required */
+		FunctionName: 'searchSocialFetch', /* required */
 		InvocationType: 'Event',
 		LogType: 'None',
 	}
@@ -23,7 +23,7 @@ var invoke = Q.nbind( lambda.invoke, lambda );
 
 function sendMessage(msg) {
 	var mp = invoke({
-		Payload: JSON.stringify({ "data": msg }),
+		Payload: JSON.stringify(msg),
 	}).then(function( data ) {
 
 		console.log( "Messages sent");
@@ -37,15 +37,8 @@ function sendMessage(msg) {
 	return mp;
 }
 
-function handleUrl() {
-	var deferred = Q.defer();
-
-	knex.select().table('urls')
-		.orderBy('updated_at', 'asc')
-		.then(function(list) {
+function handleUrl(list) {
 		var promise = Q(true);
-
-		var batch = [];
 
 		list.forEach(function(row) {
 			console.log(row.url_id);
@@ -55,45 +48,32 @@ function handleUrl() {
 				url: row.url
 			};
 
-			batch.push(msg);
+			var mp = sendMessage(msg);
 
-			if (batch.length > 100) {
-				console.log(batch);
-				var mp = sendMessage(batch);
-
-				promise = promise.then(function() {
-					return mp;
-				});
-
-				batch = [];
-			}
-
-		});
-
-		var mp = sendMessage(batch);
-
-		promise = promise.then(function() {
-			return mp;
+			promise = promise.then(function() {
+				return mp;
+			});
 		});
 
 		promise.then(function() {
 			console.log("Array Length", list.length);
-			deferred.resolve();
 		});
 
 		return promise;
-	}).catch(function(e) {
-		console.trace(e, e.stack.split("\n"));
-		throw e;
-	});
-
-	return deferred.promise;
 }
 
 exports.handler = function(event, context) {
     console.log('Received event');
 
-	handleUrl().then(function() {
+	if (!event.data || event.data == '') {
+		context.fail('Missing parameter data');
+		return;
+	}
+
+	var data = event.data;
+
+
+	handleUrl(data).then(function() {
 		context.succeed("");
 	}).catch(function(e) {
 		console.trace(e, e.stack.split("\n"));
