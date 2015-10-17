@@ -56,13 +56,21 @@ form input[type=url] {
 	width: 30em;
 }
 
+form textarea {
+	border: 0;
+	border-radius: 3px;
+	padding: 1em;
+	width: 30em;
+	margin-bottom: 0.5em;
+}
+
 form input[type=submit] {
 	background: #2980b9;
 	padding: 1em 2em 1em 2em;
 	border: 0;
 	color: #FFF;
 	border-radius: 3px;
-	transition: all 0.3s ease-in;
+	transition: all 0.2s ease-in;
 }
 
 form input[type=submit]:hover {
@@ -119,6 +127,10 @@ form input[type=submit]:hover {
 		width: 100%;
 	}
 
+	form textarea {
+		width: 90%;
+	}
+
 	.content {
 		width: 100%;
 	}
@@ -128,6 +140,25 @@ form input[type=submit]:hover {
 	.codrops-header h1 {
 		font-size: 2.5em;
 	}
+}
+
+.service {
+	display: block;
+	background: rgba(125, 125, 125, 0.5);
+	color: rgba(255, 255, 255, 0.5);
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 1em 2em 1em 2em;
+	z-index: 999;
+	font-size: 0.7em;
+	text-transform: uppercase;
+	transition: all 0.2s ease-in;
+}
+
+.service:hover {
+	color: rgba(255, 255, 255, 1);
+	background: rgba(50, 50, 50, 0.9);
 }
 
 /* RESULTS */
